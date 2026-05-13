@@ -48,6 +48,27 @@ public class TransactionService {
                 .build();
     }
 
+    @Transactional
+    public TransactionResponseDTO createWithdrawTransactionService(BigDecimal amount, AccountEntity account) {
+        TransactionEntity newTransaction = transactionRepository.save(
+                TransactionEntity.builder()
+                        .transactionType(TransactionType.WITHDRAW)
+                        .account(account)
+                        .amount(amount)
+                        .createdDate(LocalDate.now())
+                        .status(TransactionStatus.IN_PROGRESS)
+                        .transactionNumber(generateTransactionNumber())
+                        .build()
+        );
+
+        BigDecimal newAmount = accountService.withdrawAMount(account.getId(), amount);
+
+        return TransactionResponseDTO.builder()
+                .amount(newAmount)
+                .transactionNumber(newTransaction.getTransactionNumber())
+                .build();
+    }
+
     private String generateTransactionNumber() {
 
         Long generatedSeq = jdbcTemplate.queryForObject(

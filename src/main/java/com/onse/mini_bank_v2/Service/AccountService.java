@@ -60,6 +60,17 @@ public class AccountService {
 
     }
 
+    public BigDecimal withdrawAMount(Long accountId, BigDecimal amount) {
+        AccountEntity account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found!"));
+
+        account.setAmount(account.getAmount().subtract(amount));
+
+        AccountEntity updatedAccount = accountRepository.save(account);
+
+        return updatedAccount.getAmount();
+    }
+
     @Transactional
     private Long generateAccountNumber() {
 

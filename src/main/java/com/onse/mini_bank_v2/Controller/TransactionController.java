@@ -53,4 +53,27 @@ public class TransactionController {
 
     }
 
+    @PostMapping("/withdraw")
+    public ResponseEntity<ResponseDTO<TransactionResponseDTO>> createWithdrawTransactionApi(
+            @RequestBody TransactionRequestBodyDTO body
+    ) {
+        Optional<AccountEntity> account = accountRepository.findById(body.getAccountId());
+
+        ResponseDTO<TransactionResponseDTO> responseDTO = new ResponseDTO<>();
+
+        if(account.isEmpty()) {
+            responseDTO.setMessage("Account ID not found!");
+            responseDTO.setBody(null);
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
+
+        TransactionResponseDTO transactionResponseDTO = transactionService.createWithdrawTransactionService(body.getAmount(), account.get());
+
+        responseDTO.setMessage("Successfully withdrawn!");
+        responseDTO.setBody(transactionResponseDTO);
+
+        return ResponseEntity.ok(responseDTO);
+    }
+
 }
